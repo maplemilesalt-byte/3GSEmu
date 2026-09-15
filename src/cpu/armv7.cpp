@@ -139,10 +139,10 @@ void ARMv7::execute_arm(std::uint32_t instruction) {
 
 void ARMv7::execute_thumb(std::uint16_t instruction) {
     // Thumb-1 core instructions used by the first prototype.
-    const unsigned opcode = instruction >> 13;
+    
 
     // MOVS Rd, #imm8
-    if (opcode == 0b00100) {
+    if ((instruction & 0xF800u) == 0x2000u) {
         const unsigned rd = (instruction >> 8) & 7;
         const std::uint32_t imm = instruction & 0xFF;
         regs_[rd] = imm;
@@ -151,7 +151,7 @@ void ARMv7::execute_thumb(std::uint16_t instruction) {
     }
 
     // ADDS Rd, #imm8
-    if (opcode == 0b00110) {
+    if ((instruction & 0xF800u) == 0x3000u) {
         const unsigned rd = (instruction >> 8) & 7;
         const std::uint32_t imm = instruction & 0xFF;
         regs_[rd] += imm;
@@ -160,7 +160,7 @@ void ARMv7::execute_thumb(std::uint16_t instruction) {
     }
 
     // SUBS Rd, #imm8
-    if (opcode == 0b00111) {
+    if ((instruction & 0xF800u) == 0x3800u) {
         const unsigned rd = (instruction >> 8) & 7;
         const std::uint32_t imm = instruction & 0xFF;
         regs_[rd] -= imm;

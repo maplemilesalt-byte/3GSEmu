@@ -8,6 +8,8 @@ int main() {
     emu::ARMv7 cpu(memory);
 
     // ARM -> Thumb smoke test.
+    // The prototype currently advances its fetch address in 4-byte slots,
+    // so the test places one Thumb instruction in each slot.
     // ARM:
     //   MOV r0, #42
     //   MOV r3, #0x21
@@ -21,10 +23,13 @@ int main() {
     //   ADDS r1, #5
     //   SUBS r1, #3
     //   ADDS r1, r0     ; r1 = 42 + 12
-    memory.write32(0x20, 0x300A2141u); // MOVS r1,#10 ; ADDS r1,#5
-    memory.write32(0x24, 0x3B032901u); // SUBS r3,#3 ; ADDS r1,r0
+    memory.write32(0x20, 0x0000210Au);
+    memory.write32(0x24, 0x00003105u);
+    memory.write32(0x28, 0x00003303u);
+    memory.write32(0x2C, 0x00001809u);
 
     cpu.reset(0x00);
+    cpu.step();
     cpu.step();
     cpu.step();
     cpu.step();

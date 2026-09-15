@@ -60,7 +60,10 @@ void ARMv7::step() {
         execute_thumb(instruction);
     } else {
         const auto instruction = memory_.read32(address);
-        regs_[15] = address + 8;
+        // The prototype stores the current fetch address directly in r15.
+        // Advance to the next instruction slot before execution so sequential
+        // ARM instructions are not skipped by the architectural PC offset.
+        regs_[15] = address + 4;
         execute_arm(instruction);
     }
 }

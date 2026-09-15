@@ -21,10 +21,10 @@ int main() {
     //   ADDS r1, #5
     //   SUBS r1, #3
     //   ADDS r1, r0     ; r1 = 42 + 12
-    memory.write32(0x20, 0x0000210Au);
-    memory.write32(0x24, 0x00003105u);
-    memory.write32(0x28, 0x00003903u);
-    memory.write32(0x2C, 0x00001809u);
+    memory.write16(0x20, 0x210A);
+    memory.write16(0x22, 0x3105);
+    memory.write16(0x24, 0x3903);
+    memory.write16(0x26, 0x1809);
 
     cpu.reset(0x00);
     cpu.step();

@@ -55,8 +55,8 @@ void ARMv7::step() {
     const auto address = regs_[15];
 
     if (thumb_) {
-        const auto instruction = static_cast<std::uint16_t>(memory_.read32(address) & 0xFFFFu);
-        regs_[15] = address + 4;
+        const auto instruction = memory_.read16(address);
+        regs_[15] = address + 2;
         execute_thumb(instruction);
     } else {
         const auto instruction = memory_.read32(address);

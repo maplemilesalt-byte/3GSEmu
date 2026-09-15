@@ -18,6 +18,13 @@ std::uint8_t Memory::read8(std::uint32_t address) const {
     return data_[address];
 }
 
+std::uint16_t Memory::read16(std::uint32_t address) const {
+    check_range(address, 2);
+
+    return static_cast<std::uint16_t>(data_[address]) |
+           (static_cast<std::uint16_t>(data_[address + 1]) << 8);
+}
+
 std::uint32_t Memory::read32(std::uint32_t address) const {
     check_range(address, 4);
 
@@ -30,6 +37,13 @@ std::uint32_t Memory::read32(std::uint32_t address) const {
 void Memory::write8(std::uint32_t address, std::uint8_t value) {
     check_range(address, 1);
     data_[address] = value;
+}
+
+void Memory::write16(std::uint32_t address, std::uint16_t value) {
+    check_range(address, 2);
+
+    data_[address] = static_cast<std::uint8_t>(value);
+    data_[address + 1] = static_cast<std::uint8_t>(value >> 8);
 }
 
 void Memory::write32(std::uint32_t address, std::uint32_t value) {

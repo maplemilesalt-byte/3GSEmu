@@ -9,6 +9,14 @@ namespace emu {
 namespace {
 constexpr std::uint32_t N_FLAG = 1u << 31;
 constexpr std::uint32_t Z_FLAG = 1u << 30;
+
+std::uint32_t rotate_right(std::uint32_t value, unsigned amount) {
+    amount &= 31u;
+    if (amount == 0) {
+        return value;
+    }
+    return (value >> amount) | (value << (32u - amount));
+}
 }
 
 ARMv7::ARMv7(Memory& memory) : memory_(memory) {
@@ -36,13 +44,11 @@ bool ARMv7::condition_passed(std::uint32_t condition) const {
     const bool z = (cpsr_ & Z_FLAG) != 0;
 
     switch (condition) {
-    case 0x0: return z;              // EQ
-    case 0x1: return !z;             // NE
-    case 0xA: return n == !z;         // GE (signed)
-    case 0xB: return n != !z;         // LT (signed)
-    case 0xC: return !z && (n == !z); // GT, simplified without V
-    case 0xD: return z || (n != !z);  // LE, simplified without V
-    case 0xE: return true;            // AL
+    case 0x0: return z;      // EQ
+    case 0x1: return !z;     // NE
+    case 0xA: return n == !z; // GE, V is not implemented yet
+    case 0xB: return n != !z; // LT, V is not implemented yet
+    case 0xE: return true;   // AL
     default: return false;
     }
 }
@@ -136,7 +142,9 @@ void ARMv7::execute_arm(std::uint32_t instruction) {
         throw std::runtime_error("register-shifted ARM operands are not implemented yet");
     }
 
-    const std::uint32_t operand2 = instruction & 0xFFF;
+    // ARM immediate operands are an 8-bit value rotated right by an even amount.
+    const unsigned rotate = ((instruction >> 8) & 0xF) * 2;
+    const std::uint32_t operand2 = rotate_right(instruction & 0xFF, rotate);
     std::uint32_t result = 0;
 
     switch (opcode) {
